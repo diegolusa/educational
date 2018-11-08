@@ -21,29 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package br.edu.ifrs.prog.projeto.base.dao.impl.mapper;
 
-package br.edu.ifrs.prog.projeto.base.dao;
-
-import java.sql.Connection;
+import br.edu.ifrs.prog.projeto.base.dao.RowMapper;
+import br.edu.ifrs.prog.projeto.base.entities.City;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
+/**
+ *
+ * @author diego
+ */
+public class CityMapper implements RowMapper<City>{
 
-public abstract class GenericDao<T,K> {
-    private Connection conn;
-    
-    public GenericDao(Connection conn){
-        this.conn = conn;
+    @Override
+    public City map(ResultSet rs) throws SQLException {
+        City c = new City();
+        c.setId(rs.getInt("id"));
+        c.setName(rs.getString("name"));
+        return c;
     }
-   
-
-    protected Connection getConnection(){
-        return this.conn;
-    }
     
-    public abstract K addRow(T object) throws SQLException;
-    public abstract void removeRow(T object) throws SQLException;
-    public abstract void updateRow(T object) throws SQLException;
-    public abstract List<T> getAllRows(RowMapper<T> mapper) throws SQLException;
-    public abstract T getRowById(K key,RowMapper<T> mapper) throws SQLException;
 }

@@ -21,29 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package br.edu.ifrs.prog.projeto.base.dao.impl.mapper;
 
-package br.edu.ifrs.prog.projeto.base.dao;
-
-import java.sql.Connection;
+import br.edu.ifrs.prog.projeto.base.dao.RowMapper;
+import br.edu.ifrs.prog.projeto.base.entities.City;
+import br.edu.ifrs.prog.projeto.base.entities.Person;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
+/**
+ *
+ * @author diego
+ */
+public class PersonMapper implements RowMapper<Person>{
 
-public abstract class GenericDao<T,K> {
-    private Connection conn;
-    
-    public GenericDao(Connection conn){
-        this.conn = conn;
+    @Override
+    public Person map(ResultSet rs) throws SQLException {       
+        Person p = new Person();
+        p.setBirthDate(rs.getDate("birth_date"));
+        p.setHeigth(rs.getFloat("heigth"));
+        p.setId(rs.getInt("id"));
+        p.setName(rs.getString("name"));
+        City c = new City();
+        c.setId(rs.getInt("city_id"));
+        c.setName(rs.getString("city_name"));
+        p.setCity(c);        
+        return p;
     }
-   
-
-    protected Connection getConnection(){
-        return this.conn;
-    }
     
-    public abstract K addRow(T object) throws SQLException;
-    public abstract void removeRow(T object) throws SQLException;
-    public abstract void updateRow(T object) throws SQLException;
-    public abstract List<T> getAllRows(RowMapper<T> mapper) throws SQLException;
-    public abstract T getRowById(K key,RowMapper<T> mapper) throws SQLException;
 }

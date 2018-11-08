@@ -17,6 +17,11 @@ public class City {
 
     private int id;
     private String name;
+    
+    @Override
+    public String toString(){
+        return this.name;
+    }
 
     public City(String name) {
         this.id = id;
