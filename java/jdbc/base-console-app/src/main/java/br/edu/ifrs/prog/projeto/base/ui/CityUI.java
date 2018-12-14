@@ -24,29 +24,61 @@
 package br.edu.ifrs.prog.projeto.base.ui;
 
 import br.edu.ifrs.prog.projeto.base.connection.DatabaseConnection;
+import br.edu.ifrs.prog.projeto.base.dao.impl.CityDaoImpl;
+import br.edu.ifrs.prog.projeto.base.entities.City;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  *
  * @author diego
  */
-public class AppRunner {
+public class CityUI extends BasicUI {
 
-    public static void main(String[] args) {
-        try (Connection dbConnnection = DatabaseConnection.getNewDefaultConnection();
-                Scanner input = new Scanner(System.in);) {
-            RootMenuUI rmu = new RootMenuUI(dbConnnection, input);
-            rmu.buildRootMenu();
+    private Connection dbConnection;
 
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+    public CityUI(Connection dbConnection, Scanner input) {
+        super(input);
+        this.dbConnection = dbConnection;
+
+    }
+
+    public void buildMainMenu() {
+        super.clearConsole();
+        1
+        System.out.println("    CADASTRO DE CIDADES     ");
+        System.out.print("\n1 - Adicionar\n2 - Editar\n3 - Excluir\n4 - Listar\n");
+        int option;
+        do {
+            option = super.requestIntegerValue("-> ");
+        } while (!Arrays.asList(1, 2, 3, 4).contains(option));
+
+        switch (option) {
+            case 1:
+                this.addNewCity();
+                break;
         }
 
+    }
+
+    public City addNewCity() {
+
+        System.out.println("\nCadastrar novo registro de cidade\n");
+
+        try {
+            CityDaoImpl cdi = new CityDaoImpl(this.dbConnection);
+            City city = new City();
+            city.setName(super.requestStringValue("Nome:"));
+            cdi.addRow(city);
+
+            return city;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

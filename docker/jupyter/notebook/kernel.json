@@ -1,0 +1,12 @@
+{
+    "argv": [
+        "/home/jovyan/.sdkman/candidates/java/current/bin/java",
+        "-jar",
+        "/opt/conda/share/jupyter/kernels/java/ijava-1.2.0.jar",
+        "{connection_file}"
+    ],
+    "display_name": "Java",
+    "env": {},
+    "interrupt_mode": "message",
+    "language": "java"
+}

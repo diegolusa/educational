@@ -23,30 +23,47 @@
  */
 package br.edu.ifrs.prog.projeto.base.ui;
 
-import br.edu.ifrs.prog.projeto.base.connection.DatabaseConnection;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author diego
  */
-public class AppRunner {
+public class RootMenuUI extends BasicUI {
 
-    public static void main(String[] args) {
-        try (Connection dbConnnection = DatabaseConnection.getNewDefaultConnection();
-                Scanner input = new Scanner(System.in);) {
-            RootMenuUI rmu = new RootMenuUI(dbConnnection, input);
-            rmu.buildRootMenu();
+    private Connection dbConnection;
 
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    public RootMenuUI(Connection dbConnection, Scanner input) {
+        super(input);
+        this.dbConnection = dbConnection;
 
     }
+
+    public void buildRootMenu() {
+        super.clearConsole();
+        
+        System.out.println("MENU PRINCIPAL");
+
+        System.out.print("\n1 - Cidades\n2 - Pessoas\n3 - Sair\n");
+
+        int option;
+
+        do {
+            option = super.requestIntegerValue("-> ");
+        } while (!Arrays.asList(1, 2,3).contains(option));
+
+        switch (option) {
+            case 1:
+                (new CityUI(this.dbConnection, this.input)).buildMainMenu();
+                break;
+            case 3:    
+                    return;
+        }
+        
+        this.buildRootMenu();
+
+    }
+
 }

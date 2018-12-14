@@ -44,31 +44,45 @@ import java.util.stream.Collectors;
  */
 public class PersonUI extends BasicUI {
 
-    public void addNewPerson(Scanner sc) {
+    private Connection dbConnection;
+
+    public PersonUI(Connection dbConnection, Scanner input) {
+        super(input);
+        this.dbConnection = dbConnection;
+    }
+
+    public Person addNewPerson() {
         System.out.println("\nCadastrar novo registro de pessoa\n");
         try (Connection conn = DatabaseConnection.getNewDefaultConnection()) {
             PersonDaoImpl pdi = new PersonDaoImpl(conn);
             CityDaoImpl cdi = new CityDaoImpl(conn);
 
-            Person p = new Person();
-            p.setName(super.requestStringValue("Nome:", sc));
-            p.setBirthDate(new Date(super.requestDateValue("Data de Nascimento:", sc).getTime()));
-            p.setHeigth(super.requestFloatValue("Altura:", sc));
+            Person person = new Person();
+            person.setName(super.requestStringValue("Nome: "));
+            person.setBirthDate(new Date(super.requestDateValue("Data de Nascimento: ").getTime()));
+            person.setHeigth(super.requestFloatValue("Altura: "));
 
-            City city = (City) super.requestObjectValueFromAList("Escolha a cidade de residência", sc, cdi.getAllRows((new CityMapper())::map).stream().map(item -> (Object) item).collect(Collectors.toList())
+            City city = (City) super.requestObjectValueFromAList("Escolha a cidade de residência", cdi.getAllRows((new CityMapper())::map).stream().map(item -> (Object) item).collect(Collectors.toList())
             );
+
             if (city != null) {
-                p.setCity(city);
+                person.setCity(city);
+            } else {
+                person.setCity((new CityUI(this.dbConnection, this.input)).addNewCity());
             }
 
-            pdi.addRow(p);
+            pdi.addRow(person);
             conn.commit();
+            System.out.println("Registro adicionado com sucesso!");
+            return person;
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(PersonUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(PersonUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return null;
     }
 
 }

@@ -23,6 +23,8 @@
  */
 package br.edu.ifrs.prog.projeto.base.ui;
 
+import java.io.IOException;
+import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +33,8 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -39,49 +43,66 @@ import java.util.stream.Collectors;
  */
 public abstract class BasicUI {
 
-    public Integer requestIntegerValue(String message, Scanner sc) {
+    protected Scanner input;
+
+    public BasicUI(Scanner input) {
+        this.input = input;
+    }
+
+    public void clearConsole() {
+        try {
+            Runtime.getRuntime().exec("clear");
+        } catch (IOException ex) {
+
+        }
+
+    }
+
+    public Integer requestIntegerValue(String message) {
         System.out.print(message);
-        Integer value = sc.nextInt();
-        sc.nextLine();
+        Integer value = this.input.nextInt();
+        this.input.nextLine();
         return value;
     }
 
-    public Float requestFloatValue(String message, Scanner sc) {
+    public Float requestFloatValue(String message) {
         System.out.print(message);
-        do {
-            try{
-                Float value = sc.nextFloat();
-                sc.nextLine();
-                return value;   
-            }catch(InputMismatchException ime){
-                System.out.println("\tFormato inválido. Utilize vírgula para separar as casas decimais ");
-            }
-        }while(true);
-        
-    }
-
-    public String requestStringValue(String message, Scanner sc) {
-        System.out.print(message);
-        return sc.nextLine();
-    }
-
-    public Date requestDateValue(String message, Scanner sc) {
-        System.out.print(message);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/YYYY");
         do {
             try {
-                return sdf.parse(sc.nextLine());
-            } catch (ParseException pe) {
-                System.out.println("\tData inválida. Informe no formato dd/mm/yyyy.");
+                Float value = this.input.nextFloat();
+                this.input.nextLine();
+                return value;
+            } catch (InputMismatchException ime) {
+                System.out.println("\tFormato inválido. Utilize vírgula para separar as casas decimais ");
+                this.input.nextLine();
             }
         } while (true);
 
     }
 
-    public Object requestObjectValueFromAList(String message, Scanner sc, List<Object> list) {
+    public String requestStringValue(String message) {
+        System.out.print(message);
+        return this.input.nextLine();
+    }
+
+    public Date requestDateValue(String message) {
+        System.out.print(message);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/YYYY");
+        do {
+            try {
+                return sdf.parse(this.input.nextLine());
+            } catch (ParseException pe) {
+                System.out.println("\tData inválida. Informe no formato dd/mm/yyyy.");
+
+            }
+        } while (true);
+
+    }
+
+    public Object requestObjectValueFromAList(String message, List<Object> list) {
         System.out.println(message);
 
-        String criteria = this.requestStringValue("\tBuscar por: ", sc);
+        String criteria = this.requestStringValue("\tButhis.inputar por: ");
         HashMap<Integer, Object> filteredItens = new HashMap<>();
         AtomicInteger ai = new AtomicInteger(0);
 
@@ -101,7 +122,7 @@ public abstract class BasicUI {
         );
         int escolha;
 
-        while (!filteredItens.containsKey(escolha = this.requestIntegerValue("\tInforme o código escolhido [-1 para não encontrado]: ", sc)) && escolha != -1);
+        while (!filteredItens.containsKey(escolha = this.requestIntegerValue("\tInforme o código escolhido [-1 para não encontrado]: ")) && escolha != -1);
 
         return escolha == -1 ? null : filteredItens.get(escolha);
     }
